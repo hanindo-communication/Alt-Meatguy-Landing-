@@ -10,7 +10,7 @@ One-pager untuk mengarahkan traffic dari iklan video ke **WhatsApp** (reservasi 
 
 ## Cara pakai
 
-1. **Lokal:** Buka `index.html` di browser (double-click atau drag ke browser). Atau jalankan `npx serve` di folder ini lalu buka http://localhost:3000 (agar `content.json` ter-load).
+1. **Lokal:** Di folder ini jalankan `npm install` lalu **`npm start`** → buka **http://localhost:3788** (port khusus Meatguy, tidak bentrok dengan project lain). Atau `npx serve -s . -l 3788`. Tanpa server, buka `index.html` langsung (beberapa fitur fetch bisa terbatas).
 2. **Deploy:** Upload folder ini ke Vercel, Netlify, atau static host; set root ke folder ini dan file default ke `index.html`. Pastikan `content.json` ikut di-deploy.
 
 ## Ganti workspace ke project ini

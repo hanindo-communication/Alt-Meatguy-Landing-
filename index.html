@@ -94,7 +94,7 @@
       background-color: var(--bg-deep);
       background-image:
         radial-gradient(ellipse 80% 50% at 50% 20%, rgba(201, 169, 98, 0.08) 0%, transparent 50%),
-        linear-gradient(180deg, rgba(13,11,10,0.65) 0%, rgba(13,11,10,0.88) 50%, rgba(13,11,10,0.96) 100%),
+        linear-gradient(180deg, rgba(13,11,10,0.45) 0%, rgba(13,11,10,0.55) 38%, rgba(13,11,10,0.72) 62%, rgba(13,11,10,0.88) 82%),
         url('assets/hero-bg.png');
       background-size: auto, auto, cover;
       background-position: center center;
@@ -113,11 +113,31 @@
       inset: 0;
       background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
       pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Gradasi hero → hitam: tidak ada garis putus antara gambar dan section bawah */
+    .hero::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: min(52vh, 520px);
+      background: linear-gradient(
+        180deg,
+        rgba(13, 11, 10, 0) 0%,
+        rgba(13, 11, 10, 0.35) 28%,
+        rgba(13, 11, 10, 0.78) 68%,
+        var(--bg-deep) 100%
+      );
+      pointer-events: none;
+      z-index: 1;
     }
 
     .hero-content {
       position: relative;
-      z-index: 1;
+      z-index: 2;
     }
 
     .hero .brand-name {
@@ -169,10 +189,15 @@
       font-size: clamp(1rem, 2.5vw, 1.25rem);
       color: var(--text-muted);
       font-weight: 300;
-      max-width: 28ch;
+      max-width: 32ch;
       margin: 0 auto 2.5rem;
       opacity: 0;
       animation: fadeUp 0.8s ease 0.5s forwards;
+    }
+
+    .hero .tagline .tagline-line2 {
+      display: block;
+      margin-top: 0.65rem;
     }
 
     .cta-hero {
@@ -190,14 +215,20 @@
       letter-spacing: 0.05em;
       border: none;
       cursor: pointer;
-      transition: background 0.25s, transform 0.2s;
+      transition: background 0.25s, transform 0.25s ease;
       opacity: 0;
       animation: fadeUp 0.8s ease 0.65s forwards;
     }
 
-    .cta-hero:hover {
+    .cta-hero:hover,
+    .cta-hero:focus-visible {
       background: var(--accent-dim);
-      transform: translateY(-2px);
+      transform: translateY(-2px) scale(1.05);
+      outline: none;
+    }
+
+    .cta-hero:focus-visible {
+      box-shadow: 0 0 0 2px var(--bg-deep), 0 0 0 4px var(--accent);
     }
 
     .cta-hero svg {
@@ -205,12 +236,13 @@
       height: 1.25rem;
     }
 
-    /* Scroll hint */
+    /* Scroll hint — di atas gradasi bawah hero */
     .scroll-hint {
       position: absolute;
       bottom: 2rem;
       left: 50%;
       transform: translateX(-50%);
+      z-index: 3;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -244,6 +276,18 @@
       50% { opacity: 1; transform: scaleY(1); }
     }
 
+    /* Section setelah hero: sama warna dasar, tanpa garis putus */
+    #about.section {
+      margin-top: -1px;
+      padding-top: 5.5rem;
+      background-color: var(--bg-deep);
+      background-image: linear-gradient(
+        180deg,
+        rgba(13, 11, 10, 0.99) 0,
+        var(--bg-deep) 3.5rem
+      );
+    }
+
     /* Section: experience */
     .section {
       padding: 5rem 1.5rem;
@@ -251,15 +295,66 @@
       margin: 0 auto;
     }
 
-    .section.reveal {
-      opacity: 0;
-      transform: translateY(24px);
+    /* Scroll reveal: children stagger (immersive) */
+    .section.reveal,
+    .awards.reveal,
+    .cta-block.reveal,
+    footer.site-footer.reveal {
+      opacity: 1;
+      transform: none;
     }
 
-    .section.reveal.visible {
+    .section.reveal .reveal-item,
+    .awards.reveal .reveal-item,
+    .cta-block.reveal .reveal-item,
+    footer.site-footer.reveal .reveal-item {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .section.reveal.visible .reveal-item,
+    .awards.reveal.visible .reveal-item,
+    .cta-block.reveal.visible .reveal-item,
+    footer.site-footer.reveal.visible .reveal-item {
       opacity: 1;
       transform: translateY(0);
-      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    #about.reveal.visible > .reveal-item:nth-child(1) { transition-delay: 0ms; }
+    #about.reveal.visible > .reveal-item:nth-child(2) { transition-delay: 100ms; }
+    #about.reveal.visible > .reveal-item:nth-child(3) { transition-delay: 220ms; }
+    #about.reveal.visible > .reveal-item:nth-child(4) { transition-delay: 340ms; }
+
+    #awards.reveal.visible > .reveal-item:nth-child(1) { transition-delay: 0ms; }
+    #awards.reveal.visible > .reveal-item:nth-child(2) { transition-delay: 100ms; }
+    #awards.reveal.visible > .reveal-item:nth-child(3) { transition-delay: 220ms; }
+    #awards.reveal.visible .awards-body .reveal-item:nth-child(1) { transition-delay: 380ms; }
+    #awards.reveal.visible .awards-body .reveal-item:nth-child(2) { transition-delay: 500ms; }
+    #awards.reveal.visible .awards-body .reveal-item:nth-child(3) { transition-delay: 620ms; }
+
+    #lokasi.reveal.visible > p.reveal-item { transition-delay: 0ms; }
+    #lokasi.reveal.visible > h2.reveal-item { transition-delay: 100ms; }
+    #lokasi.reveal.visible .lokasi-outlet.reveal-item:nth-of-type(1) { transition-delay: 220ms; }
+    #lokasi.reveal.visible .lokasi-outlet.reveal-item:nth-of-type(2) { transition-delay: 340ms; }
+    #lokasi.reveal.visible .lokasi-map-col.reveal-item:nth-of-type(1) { transition-delay: 460ms; }
+    #lokasi.reveal.visible .lokasi-map-col.reveal-item:nth-of-type(2) { transition-delay: 580ms; }
+
+    .cta-block.reveal.visible > h2.reveal-item { transition-delay: 0ms; }
+    .cta-block.reveal.visible > a.reveal-item { transition-delay: 120ms; }
+
+    footer.site-footer.reveal.visible .reveal-item { transition-delay: 0ms; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .section.reveal .reveal-item,
+      .awards.reveal .reveal-item,
+      .cta-block.reveal .reveal-item,
+      footer.site-footer.reveal .reveal-item {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+      }
     }
 
     .section .badge {
@@ -295,15 +390,6 @@
       max-width: 800px;
       margin: 0 auto;
       text-align: center;
-    }
-    .awards.reveal {
-      opacity: 0;
-      transform: translateY(24px);
-    }
-    .awards.reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity 0.7s ease, transform 0.7s ease;
     }
     .awards .badge {
       font-size: 0.7rem;
@@ -350,7 +436,7 @@
       text-align: left;
     }
     .awards-body p {
-      color: var(--text);
+      color: var(--text-muted);
       font-size: 1rem;
       line-height: 1.7;
       font-weight: 300;
@@ -358,6 +444,134 @@
     }
     .awards-body p:last-child {
       margin-bottom: 0;
+    }
+
+    /* Lokasi — dua outlet + peta klik */
+    .lokasi-section {
+      max-width: 880px;
+    }
+
+    .lokasi-outlets {
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .lokasi-outlet {
+      padding: 1.25rem 1.35rem;
+      background: var(--bg-card);
+      border-radius: 8px;
+      border: 1px solid rgba(201, 169, 98, 0.12);
+      text-align: left;
+    }
+
+    .lokasi-outlet-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 0.65rem;
+      letter-spacing: 0.04em;
+    }
+
+    .lokasi-address {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.65;
+      font-weight: 300;
+      margin: 0;
+    }
+
+    .lokasi-map-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .lokasi-map-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .lokasi-map-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .lokasi-map-info {
+      margin: 0;
+      text-align: center;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      color: var(--accent);
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .lokasi-map-cell {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      aspect-ratio: 16 / 10;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(201, 169, 98, 0.15);
+    }
+
+    .lokasi-map-cell .lokasi-map-iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      pointer-events: none;
+    }
+
+    .lokasi-map-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 1rem;
+      text-decoration: none;
+      background: linear-gradient(180deg, transparent 35%, rgba(13, 11, 10, 0.55) 70%, rgba(13, 11, 10, 0.92) 100%);
+      transition: background 0.25s ease;
+    }
+
+    .lokasi-map-overlay:hover,
+    .lokasi-map-overlay:focus-visible {
+      background: linear-gradient(180deg, rgba(13, 11, 10, 0.15) 0%, rgba(13, 11, 10, 0.75) 60%, rgba(13, 11, 10, 0.95) 100%);
+      outline: none;
+    }
+
+    .lokasi-map-overlay:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--accent);
+    }
+
+    .lokasi-map-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1rem;
+      background: rgba(13, 11, 10, 0.9);
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .lokasi-map-hint::after {
+      content: '↗';
+      font-size: 1rem;
+      line-height: 1;
     }
 
     /* CTA block */
@@ -371,12 +585,6 @@
       font-family: 'Cormorant Garamond', serif;
       font-size: clamp(1.5rem, 3.5vw, 2rem);
       font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-
-    .cta-block .sub {
-      color: var(--text-muted);
-      font-size: 0.95rem;
       margin-bottom: 2rem;
     }
 
@@ -393,13 +601,28 @@
       font-weight: 500;
       font-size: 1.05rem;
       border-radius: 4px;
-      transition: background 0.25s, transform 0.2s;
+      transition: background 0.25s, transform 0.25s ease;
       box-shadow: 0 4px 20px rgba(201, 169, 98, 0.35);
     }
 
-    .cta-wa:hover {
+    .cta-wa:hover,
+    .cta-wa:focus-visible {
       background: var(--accent-dim);
-      transform: translateY(-2px);
+      transform: translateY(-2px) scale(1.05);
+      outline: none;
+    }
+
+    .cta-wa:focus-visible {
+      box-shadow: 0 0 0 2px var(--bg-deep), 0 0 0 4px var(--accent), 0 4px 20px rgba(201, 169, 98, 0.35);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cta-hero:hover,
+      .cta-hero:focus-visible,
+      .cta-wa:hover,
+      .cta-wa:focus-visible {
+        transform: none;
+      }
     }
 
     .cta-wa svg {
@@ -432,7 +655,7 @@
         <h2 class="brand-name" data-json="hero.brandName">Meatguy Steakhouse</h2>
         <p class="label" data-json="hero.label">Premium Dry-Aged Steak</p>
         <h1 data-json="hero.headline">Where Passion Meets Perfection</h1>
-        <p class="tagline" data-json="hero.tagline">Experience the craft. Reserve your table or ask us anything — we’re one message away.</p>
+        <p class="tagline"><span data-json="hero.tagline[0]">Experience the craft. Reserve your table or ask us anything.</span><span class="tagline-line2" data-json="hero.tagline[1]">We're one message away.</span></p>
         <a href="https://wa.me/628119628008" class="cta-hero" target="_blank" rel="noopener" data-json-href="hero.waUrl">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           <span data-json="hero.ctaText">Chat via WhatsApp</span>
@@ -445,48 +668,77 @@
     </section>
 
     <section class="section reveal" id="about">
-      <p class="badge" data-json="about.badge">The Experience</p>
-      <h2 data-json="about.title">More than a meal</h2>
-      <p data-json="about.paragraphs[0]">At Meatguy Steakhouse, every cut is chosen and prepared with passion, precision, and respect for flavour. We’re honoured to be ranked No. 90 on the World’s 101 Best Steak Restaurants (2025).</p>
-      <p data-json="about.paragraphs[1]">Bintaro & SCBD — one message away for reservations and inquiries.</p>
+      <p class="badge reveal-item" data-json="about.badge">The Experience</p>
+      <h2 class="reveal-item" data-json="about.title">More than a meal</h2>
+      <p class="reveal-item" data-json="about.paragraphs[0]">At Meatguy Steakhouse, every cut is chosen and prepared with passion, precision, and respect for flavour. We’re honoured to be ranked No. 90 on the World’s 101 Best Steak Restaurants (2025).</p>
+      <p class="reveal-item" data-json="about.paragraphs[1]">Bintaro & SCBD — one message away for reservations and inquiries.</p>
     </section>
 
     <section class="awards reveal" id="awards">
-      <p class="badge" data-json="awards.badge">Awards</p>
-      <h2 class="awards-title" data-json="awards.title">Recognition</h2>
-      <div class="awards-logos-row">
+      <p class="badge reveal-item" data-json="awards.badge">Awards</p>
+      <h2 class="awards-title reveal-item" data-json="awards.title">Recognition</h2>
+      <div class="awards-logos-row reveal-item">
         <img src="assets/awards-logos-only.png" alt="Exquisite Awards 2023, World's 101 Best Steak Restaurants, Exquisite Awards 2024" loading="lazy" />
       </div>
       <div class="awards-body">
-        <p data-json="awards.paragraphs[0]">At Meatguy Steakhouse, everything begins with passion and craftsmanship. We select only the finest cuts and prepare each with care, precision, and respect for flavor.</p>
-        <p data-json="awards.paragraphs[1]">More than just a meal, we aim to create an experience, one that stirs your senses and lingers long after the last bite.</p>
-        <p data-json="awards.paragraphs[2]">In 2025, we are honored to be ranked No. 90 on the World's 101 Best Steak Restaurants, a recognition that reflects our continued pursuit of excellence in every cut we serve.</p>
+        <p class="reveal-item" data-json="awards.paragraphs[0]">At Meatguy Steakhouse, everything begins with passion and craftsmanship. We select only the finest cuts and prepare each with care, precision, and respect for flavor.</p>
+        <p class="reveal-item" data-json="awards.paragraphs[1]">More than just a meal, we aim to create an experience, one that stirs your senses and lingers long after the last bite.</p>
+        <p class="reveal-item" data-json="awards.paragraphs[2]">In 2025, we are honored to be ranked No. 90 on the World's 101 Best Steak Restaurants, a recognition that reflects our continued pursuit of excellence in every cut we serve.</p>
       </div>
     </section>
 
-    <section class="section reveal" id="lokasi">
-      <p class="badge" data-json="lokasi.badge">Lokasi</p>
-      <h2 data-json="lokasi.title">Kunjungi kami</h2>
-      <p data-json="lokasi.paragraph">Meatguy Bintaro & Meatguy SCBD — siap menerima reservasi dan inquiry. Satu chat WhatsApp untuk kedua outlet.</p>
+    <section class="section reveal lokasi-section" id="lokasi">
+      <p class="badge reveal-item" data-json="lokasi.badge">Lokasi</p>
+      <h2 class="reveal-item" data-json="lokasi.title">Kunjungi kami</h2>
+      <div class="lokasi-outlets">
+        <article class="lokasi-outlet reveal-item">
+          <h3 class="lokasi-outlet-name" data-json="lokasi.bintaro.name">Meatguy Steakhouse Bintaro</h3>
+          <p class="lokasi-address" data-json="lokasi.bintaro.address">Jl. Maleo JA 1 No.1, Pd. Pucung, Kec. Pd. Aren, Kota Tangerang Selatan, Banten 15229</p>
+        </article>
+        <article class="lokasi-outlet reveal-item">
+          <h3 class="lokasi-outlet-name" data-json="lokasi.scbd.name">Meatguy Steakhouse SCBD</h3>
+          <p class="lokasi-address" data-json="lokasi.scbd.address">SCBD, Jl. Jend. Sudirman Kav 52-53 No. LOT 8, RT.5/RW.1, Senayan, Kec. Kby. Baru, Jakarta Selatan 12190</p>
+        </article>
+      </div>
+
+      <div class="lokasi-map-grid">
+        <div class="lokasi-map-col reveal-item">
+          <div class="lokasi-map-cell">
+            <iframe class="lokasi-map-iframe" title="Peta Meatguy Steakhouse Bintaro" loading="lazy" referrerpolicy="no-referrer-when-downgrade" data-lokasi-embed="bintaro" src="https://maps.google.com/maps?q=-6.29876,106.71497&amp;z=16&amp;output=embed"></iframe>
+            <a href="https://maps.app.goo.gl/AdwhndEGk2UGVY4y5" target="_blank" rel="noopener noreferrer" class="lokasi-map-overlay" data-json-href="lokasi.bintaro.mapsUrl" aria-label="Buka Meatguy Steakhouse Bintaro di Google Maps">
+              <span class="lokasi-map-hint"><span data-json="lokasi.bintaro.mapCta">Buka di Google Maps</span></span>
+            </a>
+          </div>
+          <p class="lokasi-map-info" data-json="lokasi.bintaro.mapInfo">Bintaro</p>
+        </div>
+        <div class="lokasi-map-col reveal-item">
+          <div class="lokasi-map-cell">
+            <iframe class="lokasi-map-iframe" title="Peta Meatguy Steakhouse SCBD" loading="lazy" referrerpolicy="no-referrer-when-downgrade" data-lokasi-embed="scbd" src="https://maps.google.com/maps?q=-6.22535,106.80905&amp;z=16&amp;output=embed"></iframe>
+            <a href="https://maps.app.goo.gl/cyGwSu9Nnfq9JXZf6" target="_blank" rel="noopener noreferrer" class="lokasi-map-overlay" data-json-href="lokasi.scbd.mapsUrl" aria-label="Buka Meatguy Steakhouse SCBD di Google Maps">
+              <span class="lokasi-map-hint"><span data-json="lokasi.scbd.mapCta">Buka di Google Maps</span></span>
+            </a>
+          </div>
+          <p class="lokasi-map-info" data-json="lokasi.scbd.mapInfo">SCBD</p>
+        </div>
+      </div>
     </section>
 
-    <section class="cta-block">
-      <h2 data-json="ctaBlock.title">Reservasi atau tanya apa saja</h2>
-      <p class="sub" data-json="ctaBlock.sub">Tim kami siap bantu lewat WhatsApp</p>
-      <a href="https://wa.me/628119628008" class="cta-wa" target="_blank" rel="noopener" data-json-href="ctaBlock.waUrl">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        <span data-json="ctaBlock.ctaText">Contact Us!</span>
+    <section class="cta-block reveal" lang="en">
+      <h2 class="reveal-item" data-json="ctaBlock.title">Reserve now</h2>
+      <a href="https://wa.me/628119628008" class="cta-wa reveal-item" target="_blank" rel="noopener" data-json-href="ctaBlock.waUrl" aria-label="Chat on WhatsApp — reservations and inquiries">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        <span data-json="ctaBlock.ctaText">Chat on WhatsApp</span>
       </a>
     </section>
   </main>
 
-  <footer>
-    <p><span data-json="footer.text">Meatguy Steakhouse — Bintaro & SCBD</span> · <a href="https://meatguysteakhouse.com" target="_blank" rel="noopener" data-json-href="footer.websiteUrl" data-json="footer.websiteLabel">meatguysteakhouse.com</a></p>
+  <footer class="site-footer reveal">
+    <p class="reveal-item"><span data-json="footer.text">Meatguy Steakhouse — Bintaro & SCBD</span> · <a href="https://meatguysteakhouse.com" target="_blank" rel="noopener" data-json-href="footer.websiteUrl" data-json="footer.websiteLabel">meatguysteakhouse.com</a></p>
   </footer>
 
   <script>
     (function () {
-      var sections = document.querySelectorAll('.section.reveal, .awards.reveal');
+      var sections = document.querySelectorAll('.section.reveal, .awards.reveal, .cta-block.reveal, footer.site-footer.reveal');
       var observer = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
           if (entry.isIntersecting) {
@@ -530,6 +782,13 @@
             var val = getByPath(data, key);
             if (val != null) {
               el.setAttribute('href', val);
+            }
+          });
+          ['bintaro', 'scbd'].forEach(function (key) {
+            var q = getByPath(data, 'lokasi.' + key + '.embedQuery');
+            var frame = document.querySelector('[data-lokasi-embed="' + key + '"]');
+            if (q && frame) {
+              frame.src = 'https://maps.google.com/maps?q=' + encodeURIComponent(q) + '&z=16&output=embed';
             }
           });
         })

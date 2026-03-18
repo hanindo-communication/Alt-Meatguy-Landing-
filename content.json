@@ -7,7 +7,10 @@
     "brandName": "Meatguy Steakhouse",
     "label": "Premium Dry-Aged Steak",
     "headline": "Where Passion Meets Perfection",
-    "tagline": "Experience the craft. Reserve your table or ask us anything — we're one message away.",
+    "tagline": [
+      "Experience the craft. Reserve your table or ask us anything.",
+      "We're one message away."
+    ],
     "ctaText": "Chat via WhatsApp",
     "waUrl": "https://wa.me/628119628008",
     "scrollHint": "Scroll"
@@ -32,12 +35,26 @@
   "lokasi": {
     "badge": "Lokasi",
     "title": "Kunjungi kami",
-    "paragraph": "Meatguy Bintaro & Meatguy SCBD — siap menerima reservasi dan inquiry. Satu chat WhatsApp untuk kedua outlet."
+    "bintaro": {
+      "name": "Meatguy Steakhouse Bintaro",
+      "address": "Jl. Maleo JA 1 No.1, Pd. Pucung, Kec. Pd. Aren, Kota Tangerang Selatan, Banten 15229",
+      "mapsUrl": "https://maps.app.goo.gl/AdwhndEGk2UGVY4y5",
+      "mapCta": "Buka di Google Maps",
+      "embedQuery": "-6.29876,106.71497",
+      "mapInfo": "Bintaro"
+    },
+    "scbd": {
+      "name": "Meatguy Steakhouse SCBD",
+      "address": "SCBD, Jl. Jend. Sudirman Kav 52-53 No. LOT 8, RT.5/RW.1, Senayan, Kec. Kby. Baru, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12190",
+      "mapsUrl": "https://maps.app.goo.gl/cyGwSu9Nnfq9JXZf6",
+      "mapCta": "Buka di Google Maps",
+      "embedQuery": "-6.22535,106.80905",
+      "mapInfo": "SCBD"
+    }
   },
   "ctaBlock": {
-    "title": "Reservasi atau tanya apa saja",
-    "sub": "Tim kami siap bantu lewat WhatsApp",
-    "ctaText": "Contact Us!",
+    "title": "Reserve now",
+    "ctaText": "Chat on WhatsApp",
     "waUrl": "https://wa.me/628119628008"
   },
   "footer": {

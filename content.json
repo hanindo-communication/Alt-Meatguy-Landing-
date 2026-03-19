@@ -12,8 +12,46 @@
       "We're one message away."
     ],
     "ctaText": "Chat via WhatsApp",
-    "waUrl": "https://wa.me/628119628008",
+    "waUrl": "https://wa.me/6281250070094",
     "scrollHint": "Scroll"
+  },
+  "founder": {
+    "badge": "The Founder",
+    "title": "Dimsthemeatguy",
+    "subtitle": "The visionary behind Meatguy Steakhouse",
+    "name": "Dimas Ramadhan Pangestu",
+    "role": "Founder of Meatguy Steakhouse",
+    "imageUrl": "assets/founder.png",
+    "paragraphs": [
+      "Dimas (Dimsthemeatguy) turned a love for meat into a movement — from content and community to judge at the World Steak Challenge and, now, Meatguy Steakhouse."
+    ]
+  },
+  "chef": {
+    "badge": "Meet Our Meat Master",
+    "title": "Expert craftsmanship in every cut",
+    "name": "Chef Teuku Wahyudi",
+    "subtitle": "El Patrón — Executive Chef & Meat Master",
+    "imageUrl": "assets/chef.png",
+    "paragraphs": [
+      "El Patrón brings a lifetime of passion to every cut: great steak from heart, not just heat — from grill to plate."
+    ]
+  },
+  "openingHours": {
+    "title": "Opening hours",
+    "bintaro": {
+      "name": "Meatguy Bintaro",
+      "lines": [
+        "Tuesday – Friday: 15:00 – 22:00",
+        "Saturday – Sunday: 11:00 – 22:00"
+      ]
+    },
+    "scbd": {
+      "name": "Meatguy SCBD",
+      "lines": [
+        "Tuesday – Thursday: 11:00 – 15:00 & 17:30 – 23:00",
+        "Friday – Saturday: 11:00 – 15:00 & 17:30 – 24:00"
+      ]
+    }
   },
   "about": {
     "badge": "The Experience",
@@ -33,33 +71,38 @@
     ]
   },
   "lokasi": {
-    "badge": "Lokasi",
-    "title": "Kunjungi kami",
+    "badge": "Location",
+    "title": "Visit us",
+    "waLinkText": "Contact via WhatsApp",
     "bintaro": {
       "name": "Meatguy Steakhouse Bintaro",
       "address": "Jl. Maleo JA 1 No.1, Pd. Pucung, Kec. Pd. Aren, Kota Tangerang Selatan, Banten 15229",
       "mapsUrl": "https://maps.app.goo.gl/AdwhndEGk2UGVY4y5",
-      "mapCta": "Buka di Google Maps",
+      "mapCta": "Open in Google Maps",
       "embedQuery": "-6.29876,106.71497",
-      "mapInfo": "Bintaro"
+      "mapInfo": "Bintaro",
+      "waUrl": "https://wa.me/6281250070094"
     },
     "scbd": {
       "name": "Meatguy Steakhouse SCBD",
       "address": "SCBD, Jl. Jend. Sudirman Kav 52-53 No. LOT 8, RT.5/RW.1, Senayan, Kec. Kby. Baru, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12190",
       "mapsUrl": "https://maps.app.goo.gl/cyGwSu9Nnfq9JXZf6",
-      "mapCta": "Buka di Google Maps",
+      "mapCta": "Open in Google Maps",
       "embedQuery": "-6.22535,106.80905",
-      "mapInfo": "SCBD"
+      "mapInfo": "SCBD",
+      "waUrl": "https://wa.me/6281250070094"
     }
   },
   "ctaBlock": {
     "title": "Reserve now",
     "ctaText": "Chat on WhatsApp",
-    "waUrl": "https://wa.me/628119628008"
+    "waUrl": "https://wa.me/6281250070094"
   },
   "footer": {
     "text": "Meatguy Steakhouse — Bintaro & SCBD",
     "websiteUrl": "https://meatguysteakhouse.com",
-    "websiteLabel": "meatguysteakhouse.com"
+    "websiteLabel": "meatguysteakhouse.com",
+    "copyright": "© 2025 Meatguy Steakhouse",
+    "companyName": "PT. Daging Global Utama"
   }
 }

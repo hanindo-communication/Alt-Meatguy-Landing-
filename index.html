@@ -27,6 +27,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/lenis@1.1.13/dist/lenis.css" />
   <style>
     :root {
       --bg-deep: #0d0b0a;
@@ -55,6 +56,46 @@
       overflow-x: hidden;
     }
 
+    /* Main: gradient flow continuous (tidak patah antar section) */
+    main {
+      position: relative;
+      background-color: var(--bg-deep);
+      background-image:
+        linear-gradient(180deg, var(--bg-deep) 0%, rgba(13,11,10,0.97) 8%, transparent 22%, transparent 78%, rgba(13,11,10,0.97) 92%, var(--bg-deep) 100%),
+        radial-gradient(ellipse 85% 55% at 50% 18%, rgba(201, 169, 98, 0.05) 0%, transparent 48%),
+        radial-gradient(ellipse 65% 55% at 78% 52%, rgba(201, 169, 98, 0.04) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 45% at 18% 88%, rgba(201, 169, 98, 0.04) 0%, transparent 52%);
+    }
+    main::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+    }
+    main::after {
+      content: '';
+      position: absolute;
+      inset: -20%;
+      z-index: 0;
+      pointer-events: none;
+      background: radial-gradient(ellipse 60% 50% at 50% 40%, rgba(201, 169, 98, 0.04) 0%, transparent 55%);
+      animation: ambientShift 25s ease-in-out infinite;
+    }
+    @keyframes ambientShift {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(2%, -1.5%) scale(1.02); }
+      66% { transform: translate(-1.5%, 2%) scale(0.98); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      main::after { animation: none; }
+    }
+    main > * {
+      position: relative;
+      z-index: 1;
+    }
+
     /* Site header — shows after scroll (mobile-first) */
     .site-header {
       position: fixed;
@@ -79,8 +120,42 @@
       color: var(--text);
       letter-spacing: 0.02em;
     }
+    .site-header .header-nav {
+      display: none;
+    }
+    @media (min-width: 769px) {
+      .site-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .site-header .header-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1rem;
+      }
+      .site-header .header-nav a {
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        font-weight: 400;
+        letter-spacing: 0.06em;
+        text-decoration: none;
+        transition: color 0.25s ease, opacity 0.2s ease;
+      }
+      .site-header .header-nav a:hover,
+      .site-header .header-nav a:focus-visible {
+        color: var(--accent);
+        outline: none;
+      }
+      .site-header .header-nav a:focus-visible {
+        text-decoration: underline;
+      }
+    }
+    @media (max-width: 768px) {
+      .site-header .header-nav { display: none; }
+    }
 
-    /* Hero with background image + overlay (mobile-first), vertical image, fixed on scroll */
+    /* Hero with brand image (backlit logo + stone wall) + overlay for text readability */
     .hero {
       min-height: 100vh;
       min-height: 100dvh;
@@ -90,54 +165,177 @@
       align-items: center;
       text-align: center;
       position: relative;
+      overflow: hidden;
       padding: 2rem 1.5rem;
       background-color: var(--bg-deep);
       background-image:
-        radial-gradient(ellipse 80% 50% at 50% 20%, rgba(201, 169, 98, 0.08) 0%, transparent 50%),
-        linear-gradient(180deg, rgba(13,11,10,0.45) 0%, rgba(13,11,10,0.55) 38%, rgba(13,11,10,0.72) 62%, rgba(13,11,10,0.88) 82%),
-        url('assets/hero-bg.png');
-      background-size: auto, auto, cover;
+        radial-gradient(ellipse 70% 50% at 50% 42%, rgba(13,11,10,0.72) 0%, rgba(13,11,10,0.5) 45%, transparent 70%),
+        linear-gradient(180deg, rgba(13,11,10,0.58) 0%, rgba(13,11,10,0.45) 30%, rgba(13,11,10,0.55) 50%, rgba(13,11,10,0.78) 75%, rgba(13,11,10,0.92) 100%);
+      background-size: auto, auto;
       background-position: center center;
       background-repeat: no-repeat;
-      background-attachment: scroll, scroll, fixed;
       -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
     }
+    /* Hero background layer — statis, hanya di dalam hero (tidak nabrak section bawah) */
+    .hero-bg-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background-image: url('assets/hero-bg.png');
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+    }
+    .hero-bg-layer::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(13, 11, 10, 0.4);
+      pointer-events: none;
+    }
     .hero.has-bg-local {
-      /* same image, already in default above */
+      /* local hero-bg.png used by default above */
     }
 
+    /* Immersive hero background: gradient mesh + light sweep (below noise) */
+    .hero-bg-immersive {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .hero-bg-immersive::before {
+      content: '';
+      position: absolute;
+      inset: -30%;
+      width: 160%;
+      height: 160%;
+      left: -30%;
+      top: -30%;
+      background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(201, 169, 98, 0.1) 0%, transparent 55%);
+      animation: gradientMesh 22s ease-in-out infinite;
+    }
+    .hero-light-sweep {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(105deg, transparent 0%, rgba(201, 169, 98, 0.04) 35%, rgba(201, 169, 98, 0.1) 50%, rgba(201, 169, 98, 0.04) 65%, transparent 100%);
+      background-size: 80% 100%;
+      transform: translateX(-120%);
+      animation: lightSweep 2.2s ease-out 0.6s forwards;
+      opacity: 0;
+    }
+    .hero-bokeh {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .hero-bokeh .bokeh-dot {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201, 169, 98, 0.06) 0%, transparent 70%);
+      animation: bokehFloat 28s ease-in-out infinite;
+    }
+    .hero-bokeh .bokeh-dot:nth-child(1) { left: 8%; top: 15%; width: 60px; height: 60px; animation-delay: 0s; }
+    .hero-bokeh .bokeh-dot:nth-child(2) { left: 22%; top: 70%; width: 80px; height: 80px; animation-delay: -3s; }
+    .hero-bokeh .bokeh-dot:nth-child(3) { left: 45%; top: 25%; width: 50px; height: 50px; animation-delay: -6s; }
+    .hero-bokeh .bokeh-dot:nth-child(4) { left: 65%; top: 60%; width: 70px; height: 70px; animation-delay: -9s; }
+    .hero-bokeh .bokeh-dot:nth-child(5) { left: 85%; top: 20%; width: 55px; height: 55px; animation-delay: -12s; }
+    .hero-bokeh .bokeh-dot:nth-child(6) { left: 15%; top: 45%; width: 45px; height: 45px; animation-delay: -2s; }
+    .hero-bokeh .bokeh-dot:nth-child(7) { left: 75%; top: 80%; width: 65px; height: 65px; animation-delay: -5s; }
+    .hero-bokeh .bokeh-dot:nth-child(8) { left: 50%; top: 85%; width: 40px; height: 40px; animation-delay: -8s; }
+    .hero-bokeh .bokeh-dot:nth-child(9) { left: 90%; top: 50%; width: 50px; height: 50px; animation-delay: -11s; }
+    .hero-bokeh .bokeh-dot:nth-child(10) { left: 30%; top: 5%; width: 70px; height: 70px; animation-delay: -4s; }
+    @media (max-width: 768px) {
+      .hero-bokeh .bokeh-dot:nth-child(n+7) { display: none; }
+    }
+    @keyframes gradientMesh {
+      0%, 100% { transform: scale(1) translate(0, 0); opacity: 0.85; }
+      50% { transform: scale(1.08) translate(3%, 2%); opacity: 1; }
+    }
+    @keyframes lightSweep {
+      0% { transform: translateX(-120%); opacity: 0; }
+      40% { opacity: 1; }
+      100% { transform: translateX(120%); opacity: 0; }
+    }
+    @keyframes bokehFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+      50% { transform: translate(15px, -20px) scale(1.15); opacity: 0.8; }
+    }
+    /* Desktop-only: subtle gradient spotlight follows mouse */
+    .hero-spotlight {
+      display: none;
+    }
+    @media (min-width: 769px) {
+      .hero-spotlight {
+        display: block;
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background: radial-gradient(ellipse 40% 40% at 50% 50%, rgba(201, 169, 98, 0.06) 0%, transparent 70%);
+        transform: translate(calc(var(--mouse-x, 0) * 12px), calc(var(--mouse-y, 0) * 12px));
+        transition: transform 0.15s ease-out;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-spotlight { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-bg-immersive::before,
+      .hero-light-sweep,
+      .hero-bokeh .bokeh-dot { animation: none; }
+      .hero-light-sweep { opacity: 0; }
+    }
+
+    /* Overlay: vignette (gelap di pinggir, terang di tengah) — background tetap kelihatan, teks terbaca + noise */
     .hero::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      background:
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"),
+        radial-gradient(ellipse 100% 100% at 50% 50%, transparent 0%, rgba(13,11,10,0.25) 40%, rgba(13,11,10,0.6) 70%, rgba(13,11,10,0.85) 100%);
       pointer-events: none;
-      z-index: 0;
+      z-index: 1;
     }
 
-    /* Gradasi hero → hitam: tidak ada garis putus antara gambar dan section bawah */
+    /* Gradasi hero → main: transisi halus ke bg-deep (tidak patah) */
     .hero::after {
       content: '';
       position: absolute;
       left: 0;
       right: 0;
       bottom: 0;
-      height: min(52vh, 520px);
+      height: min(58vh, 580px);
       background: linear-gradient(
         180deg,
         rgba(13, 11, 10, 0) 0%,
-        rgba(13, 11, 10, 0.35) 28%,
-        rgba(13, 11, 10, 0.78) 68%,
+        rgba(13, 11, 10, 0.2) 20%,
+        rgba(13, 11, 10, 0.45) 45%,
+        rgba(13, 11, 10, 0.72) 70%,
         var(--bg-deep) 100%
       );
       pointer-events: none;
-      z-index: 1;
+      z-index: 2;
     }
 
     .hero-content {
       position: relative;
-      z-index: 2;
+      z-index: 3;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.8), 0 2px 12px rgba(0,0,0,0.6), 0 4px 24px rgba(0,0,0,0.4);
+    }
+    .hero.scrolled-out .hero-content {
+      opacity: 0.65;
+      transform: translateY(-14px) scale(0.98);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero.scrolled-out .hero-content { opacity: 1; transform: none; }
     }
 
     .hero .brand-name {
@@ -149,6 +347,7 @@
       margin-bottom: 0.75rem;
       opacity: 0;
       animation: fadeUp 0.8s ease 0.05s forwards;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.7), 0 2px 8px rgba(0,0,0,0.5);
     }
     .hero .hero-logo {
       display: block;
@@ -159,6 +358,7 @@
       object-fit: contain;
       opacity: 0;
       animation: fadeUp 0.8s ease 0s forwards;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5)) drop-shadow(0 4px 12px rgba(0,0,0,0.35));
     }
     @media (max-width: 640px) {
       .hero .hero-logo { max-height: 4rem; }
@@ -173,6 +373,7 @@
       font-weight: 500;
       opacity: 0;
       animation: fadeUp 0.8s ease 0.2s forwards;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.7), 0 2px 8px rgba(0,0,0,0.5);
     }
 
     .hero h1 {
@@ -187,8 +388,8 @@
 
     .hero .tagline {
       font-size: clamp(1rem, 2.5vw, 1.25rem);
-      color: var(--text-muted);
-      font-weight: 300;
+      color: rgba(245, 240, 235, 0.92);
+      font-weight: 400;
       max-width: 32ch;
       margin: 0 auto 2.5rem;
       opacity: 0;
@@ -201,6 +402,8 @@
     }
 
     .cta-hero {
+      --magnetic-x: 0;
+      --magnetic-y: 0;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -215,20 +418,28 @@
       letter-spacing: 0.05em;
       border: none;
       cursor: pointer;
-      transition: background 0.25s, transform 0.25s ease;
+      transition: background 0.35s ease, transform 0.35s ease, box-shadow 0.35s ease;
       opacity: 0;
       animation: fadeUp 0.8s ease 0.65s forwards;
+      box-shadow: 0 0 20px rgba(201, 169, 98, 0.45), 0 0 40px rgba(201, 169, 98, 0.25), 0 2px 12px rgba(201, 169, 98, 0.3);
+      transform: translate(var(--magnetic-x), var(--magnetic-y));
     }
 
     .cta-hero:hover,
     .cta-hero:focus-visible {
       background: var(--accent-dim);
-      transform: translateY(-2px) scale(1.05);
+      transform: translate(calc(var(--magnetic-x) + 0px), calc(var(--magnetic-y) - 2px)) scale(1.05);
+      box-shadow: 0 0 28px rgba(201, 169, 98, 0.55), 0 0 56px rgba(201, 169, 98, 0.3), 0 6px 24px rgba(201, 169, 98, 0.4);
       outline: none;
     }
 
+    .cta-hero:active {
+      transform: translate(var(--magnetic-x), var(--magnetic-y)) scale(0.98);
+      box-shadow: 0 0 16px rgba(201, 169, 98, 0.4), 0 2px 10px rgba(201, 169, 98, 0.25);
+    }
+
     .cta-hero:focus-visible {
-      box-shadow: 0 0 0 2px var(--bg-deep), 0 0 0 4px var(--accent);
+      box-shadow: 0 0 0 2px var(--bg-deep), 0 0 0 4px var(--accent), 0 0 28px rgba(201, 169, 98, 0.55), 0 0 56px rgba(201, 169, 98, 0.3);
     }
 
     .cta-hero svg {
@@ -236,7 +447,7 @@
       height: 1.25rem;
     }
 
-    /* Scroll hint — di atas gradasi bawah hero */
+    /* Scroll hint — di atas gradasi bawah hero; fades out after scroll */
     .scroll-hint {
       position: absolute;
       bottom: 2rem;
@@ -251,6 +462,12 @@
       font-size: 0.7rem;
       letter-spacing: 0.2em;
       text-transform: uppercase;
+      opacity: 1;
+      transition: opacity 0.4s ease;
+    }
+    .scroll-hint.faded {
+      opacity: 0;
+      pointer-events: none;
     }
 
     .scroll-hint .line {
@@ -276,32 +493,88 @@
       50% { opacity: 1; transform: scaleY(1); }
     }
 
-    /* Section setelah hero: sama warna dasar, tanpa garis putus */
+    /* Section "in view" glow — subtle accent when section enters viewport */
+    .section.in-view,
+    .awards.in-view,
+    .lokasi-section.in-view,
+    footer.site-footer.in-view {
+      position: relative;
+    }
+    .section.in-view::before,
+    .awards.in-view::before,
+    .lokasi-section.in-view::before,
+    footer.site-footer.in-view::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: 12px;
+      pointer-events: none;
+      box-shadow: inset 0 0 80px rgba(201, 169, 98, 0.07);
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .section.in-view::before,
+    .awards.in-view::before,
+    .lokasi-section.in-view::before,
+    footer.site-footer.in-view::before {
+      opacity: 1;
+    }
+
+    /* Section setelah hero: sambung gradasi hero, tidak patah */
     #about.section {
       margin-top: -1px;
       padding-top: 5.5rem;
-      background-color: var(--bg-deep);
-      background-image: linear-gradient(
-        180deg,
-        rgba(13, 11, 10, 0.99) 0,
-        var(--bg-deep) 3.5rem
-      );
+      background-color: transparent;
+      background-image:
+        linear-gradient(180deg, transparent 0%, transparent 65%, rgba(201, 169, 98, 0.03) 85%, transparent 100%),
+        radial-gradient(ellipse 82% 55% at 50% 25%, rgba(201, 169, 98, 0.045) 0%, transparent 52%);
     }
 
-    /* Section: experience */
+    /* Founder / Chef: gradient lembut sambung about & awards */
+    #founder.section {
+      background-color: transparent;
+      background-image:
+        linear-gradient(180deg, transparent 0%, rgba(201, 169, 98, 0.02) 15%, transparent 50%, rgba(201, 169, 98, 0.02) 85%, transparent 100%),
+        radial-gradient(ellipse 65% 55% at 30% 50%, rgba(201, 169, 98, 0.05) 0%, transparent 55%);
+    }
+    #chef.section {
+      background-color: transparent;
+      background-image:
+        linear-gradient(180deg, transparent 0%, rgba(201, 169, 98, 0.02) 20%, transparent 80%, transparent 100%),
+        radial-gradient(ellipse 55% 65% at 70% 50%, rgba(201, 169, 98, 0.05) 0%, transparent 55%);
+    }
+
+    /* Section: experience — same width & bubble for all segments */
     .section {
       padding: 5rem 1.5rem;
       max-width: 720px;
       margin: 0 auto;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      transition: box-shadow 0.4s ease, border-color 0.4s ease;
+    }
+    @media (min-width: 769px) {
+      .section:hover {
+        border-color: rgba(201, 169, 98, 0.12);
+        box-shadow: 0 0 0 1px rgba(201, 169, 98, 0.06);
+      }
     }
 
-    /* Scroll reveal: children stagger (immersive) */
+    /* Scroll reveal: section entrance (fade/scale) + children stagger — more dramatic */
     .section.reveal,
     .awards.reveal,
     .cta-block.reveal,
     footer.site-footer.reveal {
+      opacity: 0.95;
+      transform: scale(0.98);
+      transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .section.reveal.visible,
+    .awards.reveal.visible,
+    .cta-block.reveal.visible,
+    footer.site-footer.reveal.visible {
       opacity: 1;
-      transform: none;
+      transform: scale(1);
     }
 
     .section.reveal .reveal-item,
@@ -309,7 +582,7 @@
     .cta-block.reveal .reveal-item,
     footer.site-footer.reveal .reveal-item {
       opacity: 0;
-      transform: translateY(22px);
+      transform: translateY(30px) scale(0.97);
       transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1),
         transform 1s cubic-bezier(0.22, 1, 0.36, 1);
     }
@@ -319,34 +592,68 @@
     .cta-block.reveal.visible .reveal-item,
     footer.site-footer.reveal.visible .reveal-item {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
     }
 
+    #founder.reveal .founder-photo.reveal-item { transform: translateY(calc(30px + var(--parallax-y, 0))) translateX(-12px) scale(0.97); }
+    #founder.reveal.visible .founder-photo.reveal-item { transform: translateY(var(--parallax-y, 0)) translateX(0) scale(1); }
+    #founder.reveal .founder-text.reveal-item { transform: translateY(30px) translateX(12px) scale(0.97); }
+    #founder.reveal.visible .founder-text.reveal-item { transform: translateY(0) translateX(0) scale(1); }
+
+    #chef.reveal .chef-photo.reveal-item { transform: translateY(calc(30px + var(--parallax-y, 0))) translateX(12px) scale(0.97); }
+    #chef.reveal.visible .chef-photo.reveal-item { transform: translateY(var(--parallax-y, 0)) translateX(0) scale(1); }
+    #chef.reveal .chef-text.reveal-item { transform: translateY(30px) translateX(-12px) scale(0.97); }
+    #chef.reveal.visible .chef-text.reveal-item { transform: translateY(0) translateX(0) scale(1); }
+
     #about.reveal.visible > .reveal-item:nth-child(1) { transition-delay: 0ms; }
-    #about.reveal.visible > .reveal-item:nth-child(2) { transition-delay: 100ms; }
-    #about.reveal.visible > .reveal-item:nth-child(3) { transition-delay: 220ms; }
-    #about.reveal.visible > .reveal-item:nth-child(4) { transition-delay: 340ms; }
+    #about.reveal.visible > .reveal-item:nth-child(2) { transition-delay: 150ms; }
+    #about.reveal.visible > .reveal-item:nth-child(3) { transition-delay: 280ms; }
+    #about.reveal.visible > .reveal-item:nth-child(4) { transition-delay: 410ms; }
+
+    #highlighted-menu.reveal.visible > .reveal-item:nth-child(1) { transition-delay: 0ms; }
+    #highlighted-menu.reveal.visible > .reveal-item:nth-child(2) { transition-delay: 150ms; }
+    #highlighted-menu.reveal.visible > .reveal-item:nth-child(3) { transition-delay: 280ms; }
+    #highlighted-menu.reveal.visible > .highlighted-menu-grid.reveal-item { transition-delay: 410ms; }
+
+    #founder.reveal.visible .founder-photo.reveal-item { transition-delay: 0ms; }
+    #founder.reveal.visible .founder-text.reveal-item { transition-delay: 180ms; }
+
+    #chef.reveal.visible .chef-text.reveal-item { transition-delay: 0ms; }
+    #chef.reveal.visible .chef-photo.reveal-item { transition-delay: 180ms; }
 
     #awards.reveal.visible > .reveal-item:nth-child(1) { transition-delay: 0ms; }
-    #awards.reveal.visible > .reveal-item:nth-child(2) { transition-delay: 100ms; }
-    #awards.reveal.visible > .reveal-item:nth-child(3) { transition-delay: 220ms; }
-    #awards.reveal.visible .awards-body .reveal-item:nth-child(1) { transition-delay: 380ms; }
-    #awards.reveal.visible .awards-body .reveal-item:nth-child(2) { transition-delay: 500ms; }
-    #awards.reveal.visible .awards-body .reveal-item:nth-child(3) { transition-delay: 620ms; }
+    #awards.reveal.visible > .reveal-item:nth-child(2) { transition-delay: 150ms; }
+    #awards.reveal.visible > .reveal-item:nth-child(3) { transition-delay: 280ms; }
+    #awards.reveal.visible .awards-body .reveal-item:nth-child(1) { transition-delay: 430ms; }
+    #awards.reveal.visible .awards-body .reveal-item:nth-child(2) { transition-delay: 560ms; }
+    #awards.reveal.visible .awards-body .reveal-item:nth-child(3) { transition-delay: 690ms; }
+
+    #opening-hours.reveal.visible > .reveal-item:nth-child(1) { transition-delay: 0ms; }
+    #opening-hours.reveal.visible > .reveal-item:nth-child(2) { transition-delay: 150ms; }
+    #opening-hours.reveal.visible > .reveal-item:nth-child(3) { transition-delay: 280ms; }
 
     #lokasi.reveal.visible > p.reveal-item { transition-delay: 0ms; }
-    #lokasi.reveal.visible > h2.reveal-item { transition-delay: 100ms; }
-    #lokasi.reveal.visible .lokasi-outlet.reveal-item:nth-of-type(1) { transition-delay: 220ms; }
-    #lokasi.reveal.visible .lokasi-outlet.reveal-item:nth-of-type(2) { transition-delay: 340ms; }
-    #lokasi.reveal.visible .lokasi-map-col.reveal-item:nth-of-type(1) { transition-delay: 460ms; }
-    #lokasi.reveal.visible .lokasi-map-col.reveal-item:nth-of-type(2) { transition-delay: 580ms; }
+    #lokasi.reveal.visible > h2.reveal-item { transition-delay: 150ms; }
+    #lokasi.reveal.visible .lokasi-outlet.reveal-item:nth-of-type(1) { transition-delay: 280ms; }
+    #lokasi.reveal.visible .lokasi-outlet.reveal-item:nth-of-type(2) { transition-delay: 410ms; }
+    #lokasi.reveal.visible .lokasi-map-col.reveal-item:nth-of-type(1) { transition-delay: 540ms; }
+    #lokasi.reveal.visible .lokasi-map-col.reveal-item:nth-of-type(2) { transition-delay: 670ms; }
 
     .cta-block.reveal.visible > h2.reveal-item { transition-delay: 0ms; }
-    .cta-block.reveal.visible > a.reveal-item { transition-delay: 120ms; }
+    .cta-block.reveal.visible > a.reveal-item { transition-delay: 180ms; }
 
-    footer.site-footer.reveal.visible .reveal-item { transition-delay: 0ms; }
+    footer.site-footer.reveal.visible > .reveal-item:nth-child(1) { transition-delay: 0ms; }
+    footer.site-footer.reveal.visible > .reveal-item:nth-child(2) { transition-delay: 100ms; }
 
     @media (prefers-reduced-motion: reduce) {
+      .section.reveal,
+      .awards.reveal,
+      .cta-block.reveal,
+      footer.site-footer.reveal {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+      }
       .section.reveal .reveal-item,
       .awards.reveal .reveal-item,
       .cta-block.reveal .reveal-item,
@@ -384,12 +691,182 @@
       margin-top: 0.75rem;
     }
 
-    /* Awards section — like meatguysteakhouse.com: logo row + 3 paragraphs */
+    .section .section-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 0.35rem;
+      letter-spacing: 0.04em;
+    }
+    .section .section-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-bottom: 1.25rem;
+    }
+
+    /* Highlighted menu: satu grid, semua kartu format sama (gambar atas, teks bawah) */
+    .highlighted-menu-grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: 1fr;
+      max-width: 720px;
+      margin: 2rem auto 0;
+    }
+    @media (min-width: 769px) {
+      .highlighted-menu-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+    }
+    .highlighted-menu-card {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+    }
+    .highlighted-menu-image {
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(201, 169, 98, 0.18);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    }
+    .highlighted-menu-image img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 5 / 4;
+      object-fit: cover;
+      vertical-align: middle;
+    }
+    .highlighted-menu-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.02em;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+    }
+    .highlighted-menu-desc {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.65;
+      font-weight: 300;
+    }
+    .highlighted-menu-card--collage {
+      /* same as base card now */
+    }
+
+    /* Founder / Chef: photo + text block (grid desktop, stack mobile) */
+    .founder-block,
+    .chef-block {
+      display: grid;
+      gap: 2rem;
+      grid-template-columns: 1fr;
+      align-items: start;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    @media (min-width: 769px) {
+      .founder-block {
+        grid-template-columns: 280px 1fr;
+        gap: 2.5rem;
+      }
+      .chef-block {
+        grid-template-columns: 1fr 280px;
+        gap: 2.5rem;
+      }
+      .chef-block .chef-photo {
+        order: 2;
+      }
+      .chef-block .chef-text {
+        order: 1;
+      }
+    }
+    .founder-photo,
+    .chef-photo {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(201, 169, 98, 0.18);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+      transition: box-shadow 0.35s ease, border-color 0.35s ease;
+      cursor: pointer;
+    }
+    @media (min-width: 769px) {
+      .founder-photo:hover,
+      .chef-photo:hover {
+        border-color: rgba(201, 169, 98, 0.28);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(201, 169, 98, 0.25);
+      }
+      .founder-photo:hover img,
+      .chef-photo:hover img {
+        transform: scale(1.05);
+      }
+    }
+    .founder-text .badge,
+    .chef-text .badge {
+      transition: color 0.25s ease;
+    }
+    @media (min-width: 769px) {
+      .founder-text:hover .badge,
+      .chef-text:hover .badge {
+        color: var(--accent);
+      }
+    }
+    .founder-photo img,
+    .chef-photo img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      vertical-align: middle;
+      transition: transform 0.4s ease;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .founder-photo img,
+      .chef-photo img {
+        transition: none;
+      }
+      .founder-photo:hover img,
+      .chef-photo:hover img {
+        transform: none;
+      }
+    }
+    .founder-text .badge,
+    .chef-text .badge {
+      margin-bottom: 0.75rem;
+    }
+    .founder-text .section-name,
+    .chef-text .section-name {
+      margin-bottom: 0.25rem;
+    }
+    .founder-text p.reveal-item:last-of-type,
+    .chef-text p.reveal-item:last-of-type {
+      margin-top: 0.75rem;
+    }
+
+    /* Awards section — gradient flow top/bottom blend */
     .awards {
-      padding: 4rem 1.5rem;
-      max-width: 800px;
+      padding: 5rem 1.5rem;
+      max-width: 720px;
       margin: 0 auto;
       text-align: center;
+      background-color: transparent;
+      background-image:
+        linear-gradient(180deg, transparent 0%, rgba(201, 169, 98, 0.03) 12%, transparent 25%, transparent 75%, rgba(201, 169, 98, 0.03) 88%, transparent 100%),
+        radial-gradient(ellipse 72% 45% at 50% 35%, rgba(201, 169, 98, 0.055) 0%, transparent 58%);
+      border-radius: 12px;
+      border: 1px solid transparent;
+      transition: box-shadow 0.4s ease, border-color 0.4s ease;
+    }
+    @media (min-width: 769px) {
+      .awards:hover {
+        border-color: rgba(201, 169, 98, 0.12);
+        box-shadow: 0 0 0 1px rgba(201, 169, 98, 0.06);
+      }
     }
     .awards .badge {
       font-size: 0.7rem;
@@ -421,6 +898,15 @@
       background: linear-gradient(to right, var(--bg-deep) 0%, transparent 14%, transparent 86%, var(--bg-deep) 100%),
                   linear-gradient(to bottom, var(--bg-deep) 0%, transparent 10%, transparent 90%, var(--bg-deep) 100%);
     }
+    .awards-logos-row {
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+    @media (min-width: 769px) {
+      .awards-logos-row:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 40px rgba(201, 169, 98, 0.1), 0 0 0 1px rgba(201, 169, 98, 0.06);
+      }
+    }
     .awards-logos-row img {
       width: 100%;
       height: auto;
@@ -446,9 +932,67 @@
       margin-bottom: 0;
     }
 
-    /* Lokasi — dua outlet + peta klik */
+    /* Opening hours — section gradient flow */
+    #opening-hours.section {
+      background-color: transparent;
+      background-image: linear-gradient(180deg, transparent 0%, rgba(201, 169, 98, 0.02) 30%, transparent 70%, transparent 100%),
+        radial-gradient(ellipse 72% 52% at 50% 38%, rgba(201, 169, 98, 0.045) 0%, transparent 55%);
+    }
+    .opening-hours-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+    @media (max-width: 640px) {
+      .opening-hours-grid { grid-template-columns: 1fr; }
+    }
+    .opening-hours-card {
+      padding: 1.25rem 1.35rem;
+      background: linear-gradient(165deg, rgba(22, 20, 18, 0.88) 0%, rgba(22, 20, 18, 0.92) 50%, rgba(22, 20, 18, 0.88) 100%);
+      background-color: rgba(22, 20, 18, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 8px;
+      border: 1px solid rgba(201, 169, 98, 0.12);
+      text-align: left;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, transform 0.35s ease;
+      transform: perspective(800px) rotateX(0deg) rotateY(0deg);
+    }
+    .opening-hours-card h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+      letter-spacing: 0.04em;
+    }
+    .opening-hours-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin: 0.25rem 0 0;
+    }
+    @media (min-width: 769px) {
+      .opening-hours-card:hover {
+        border-color: rgba(201, 169, 98, 0.22);
+        background: linear-gradient(165deg, rgba(28, 25, 22, 0.92) 0%, rgba(22, 20, 18, 0.95) 50%, rgba(28, 25, 22, 0.92) 100%);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(201, 169, 98, 0.06);
+        transform: perspective(800px) rotateX(1deg) rotateY(-0.5deg);
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .opening-hours-card:hover { transform: none; }
+    }
+
+    /* Lokasi — gradient flow ke footer (inherits .section width & bubble) */
     .lokasi-section {
-      max-width: 880px;
+      max-width: 720px;
+      background-color: transparent;
+      background-image:
+        linear-gradient(180deg, transparent 0%, transparent 70%, rgba(201, 169, 98, 0.025) 95%, transparent 100%),
+        radial-gradient(ellipse 55% 42% at 78% 92%, rgba(201, 169, 98, 0.04) 0%, transparent 52%),
+        radial-gradient(ellipse 65% 55% at 50% 5%, rgba(201, 169, 98, 0.04) 0%, transparent 50%);
     }
 
     .lokasi-outlets {
@@ -460,10 +1004,28 @@
 
     .lokasi-outlet {
       padding: 1.25rem 1.35rem;
-      background: var(--bg-card);
+      background: linear-gradient(165deg, rgba(22, 20, 18, 0.88) 0%, rgba(22, 20, 18, 0.92) 50%, rgba(22, 20, 18, 0.88) 100%);
+      background-color: rgba(22, 20, 18, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border-radius: 8px;
       border: 1px solid rgba(201, 169, 98, 0.12);
       text-align: left;
+      transition: transform 0.35s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+      transform: perspective(800px) translateY(0) rotateX(0deg) rotateY(0deg);
+    }
+    .lokasi-outlet:hover {
+      transform: perspective(800px) translateY(-4px) rotateX(1deg) rotateY(0.5deg);
+      border-color: rgba(201, 169, 98, 0.25);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 0 24px rgba(201, 169, 98, 0.06);
+    }
+    .lokasi-outlet:active {
+      transform: perspective(800px) translateY(-2px) rotateX(0deg) rotateY(0deg);
+      border-color: rgba(201, 169, 98, 0.28);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .lokasi-outlet:hover,
+      .lokasi-outlet:active { transform: translateY(-4px); }
     }
 
     .lokasi-outlet-name {
@@ -481,6 +1043,25 @@
       line-height: 1.65;
       font-weight: 300;
       margin: 0;
+    }
+    .lokasi-wa-link {
+      display: inline-block;
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: color 0.25s ease, text-decoration-color 0.2s ease;
+    }
+    .lokasi-wa-link:hover,
+    .lokasi-wa-link:focus-visible {
+      text-decoration: underline;
+      outline: none;
+    }
+    .lokasi-wa-link:focus-visible {
+      box-shadow: 0 0 0 2px var(--accent);
+      border-radius: 2px;
     }
 
     .lokasi-map-grid {
@@ -519,6 +1100,12 @@
       aspect-ratio: 16 / 10;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
       border: 1px solid rgba(201, 169, 98, 0.15);
+      transition: box-shadow 0.35s ease;
+    }
+    @media (min-width: 769px) {
+      .lokasi-map-cell:hover {
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 0 60px rgba(201, 169, 98, 0.06);
+      }
     }
 
     .lokasi-map-cell .lokasi-map-iframe {
@@ -540,13 +1127,16 @@
       padding: 1rem;
       text-decoration: none;
       background: linear-gradient(180deg, transparent 35%, rgba(13, 11, 10, 0.55) 70%, rgba(13, 11, 10, 0.92) 100%);
-      transition: background 0.25s ease;
+      transition: background 0.25s ease, box-shadow 0.25s ease;
     }
 
     .lokasi-map-overlay:hover,
     .lokasi-map-overlay:focus-visible {
       background: linear-gradient(180deg, rgba(13, 11, 10, 0.15) 0%, rgba(13, 11, 10, 0.75) 60%, rgba(13, 11, 10, 0.95) 100%);
       outline: none;
+    }
+    .lokasi-map-overlay:active .lokasi-map-hint {
+      transform: translateY(0) scale(0.98);
     }
 
     .lokasi-map-overlay:focus-visible {
@@ -557,6 +1147,7 @@
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
+      transition: transform 0.3s ease, opacity 0.3s ease;
       padding: 0.55rem 1rem;
       background: rgba(13, 11, 10, 0.9);
       border: 1px solid var(--accent);
@@ -566,6 +1157,13 @@
       font-weight: 600;
       letter-spacing: 0.06em;
       text-transform: uppercase;
+      opacity: 0.9;
+      transform: translateY(6px);
+    }
+    .lokasi-map-overlay:hover .lokasi-map-hint,
+    .lokasi-map-overlay:focus-visible .lokasi-map-hint {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .lokasi-map-hint::after {
@@ -578,7 +1176,9 @@
     .cta-block {
       text-align: center;
       padding: 4rem 1.5rem;
-      background: linear-gradient(180deg, transparent 0%, rgba(201, 169, 98, 0.06) 50%, transparent 100%);
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 50%, rgba(201, 169, 98, 0.04) 0%, transparent 65%),
+        linear-gradient(180deg, transparent 0%, rgba(201, 169, 98, 0.06) 50%, transparent 100%);
     }
 
     .cta-block h2 {
@@ -601,7 +1201,7 @@
       font-weight: 500;
       font-size: 1.05rem;
       border-radius: 4px;
-      transition: background 0.25s, transform 0.25s ease;
+      transition: background 0.35s ease, transform 0.35s ease, box-shadow 0.35s ease;
       box-shadow: 0 4px 20px rgba(201, 169, 98, 0.35);
     }
 
@@ -609,18 +1209,40 @@
     .cta-wa:focus-visible {
       background: var(--accent-dim);
       transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 6px 28px rgba(201, 169, 98, 0.4);
       outline: none;
     }
 
+    .cta-wa:active {
+      transform: scale(0.98);
+      box-shadow: 0 2px 12px rgba(201, 169, 98, 0.25);
+    }
+
     .cta-wa:focus-visible {
-      box-shadow: 0 0 0 2px var(--bg-deep), 0 0 0 4px var(--accent), 0 4px 20px rgba(201, 169, 98, 0.35);
+      box-shadow: 0 0 0 2px var(--bg-deep), 0 0 0 4px var(--accent), 0 6px 28px rgba(201, 169, 98, 0.4);
     }
 
     @media (prefers-reduced-motion: reduce) {
       .cta-hero:hover,
       .cta-hero:focus-visible,
+      .cta-hero:active,
       .cta-wa:hover,
-      .cta-wa:focus-visible {
+      .cta-wa:focus-visible,
+      .cta-wa:active {
+        transform: none;
+      }
+      .lokasi-outlet:hover,
+      .lokasi-outlet:active {
+        transform: none;
+      }
+      .lokasi-map-overlay:active .lokasi-map-hint {
+        transform: none;
+      }
+      .founder-photo:hover,
+      .chef-photo:hover {
+        transform: none;
+      }
+      .awards-logos-row:hover {
         transform: none;
       }
     }
@@ -641,15 +1263,175 @@
     footer a {
       color: var(--accent);
       text-decoration: none;
+      transition: color 0.25s ease, box-shadow 0.2s ease;
+    }
+    footer a:hover {
+      color: var(--accent-dim);
+    }
+    footer a:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 2px var(--accent);
+      border-radius: 2px;
+    }
+
+    /* Scroll progress bar — thin gold line at top */
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 0%;
+      background: var(--accent);
+      z-index: 101;
+      transition: width 0.08s ease-out;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .scroll-progress { display: none; }
+    }
+
+    .floating-wa {
+      --magnetic-x: 0;
+      --magnetic-y: 0;
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 99;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      min-width: 56px;
+      min-height: 56px;
+      padding: 0.75rem 1rem;
+      background: var(--accent);
+      color: var(--bg-deep);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      border-radius: 50px;
+      box-shadow: 0 4px 20px rgba(201, 169, 98, 0.4);
+      opacity: 0;
+      visibility: hidden;
+      transform: translate(0, 10px);
+      transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease, background 0.2s ease;
+    }
+    .floating-wa.visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(var(--magnetic-x), var(--magnetic-y));
+    }
+    .floating-wa:not(.visible) {
+      transform: translate(0, 10px);
+    }
+    .floating-wa:hover {
+      background: var(--accent-dim);
+    }
+    .floating-wa svg {
+      width: 1.4rem;
+      height: 1.4rem;
+      flex-shrink: 0;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .floating-wa { transition: none; }
+    }
+
+    /* Photo lightbox (founder/chef) */
+    .photo-lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: rgba(13, 11, 10, 0.92);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .photo-lightbox.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+    .photo-lightbox-backdrop {
+      position: absolute;
+      inset: 0;
+      cursor: pointer;
+    }
+    .photo-lightbox-content {
+      position: relative;
+      z-index: 1;
+      max-width: 90vw;
+      max-height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .photo-lightbox-content img {
+      max-width: 100%;
+      max-height: 85vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+    }
+    .photo-lightbox-close {
+      position: absolute;
+      top: -3rem;
+      right: 0;
+      width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(22, 20, 18, 0.9);
+      border: 1px solid rgba(201, 169, 98, 0.3);
+      border-radius: 50%;
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+    .photo-lightbox-close:hover,
+    .photo-lightbox-close:focus-visible {
+      background: var(--accent);
+      color: var(--bg-deep);
+      border-color: var(--accent);
+      outline: none;
+    }
+    .photo-lightbox-close:focus-visible {
+      box-shadow: 0 0 0 2px var(--bg-deep), 0 0 0 4px var(--accent);
     }
   </style>
 </head>
 <body>
+  <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+  <a href="https://wa.me/6281250070094" class="floating-wa" id="floating-wa" target="_blank" rel="noopener" aria-label="Reserve via WhatsApp" data-json-href="ctaBlock.waUrl">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    <span>Reserve</span>
+  </a>
   <header class="site-header" id="site-header" aria-label="Navigation">
     <span class="brand-name" data-json="hero.brandName">Meatguy Steakhouse</span>
+    <nav class="header-nav" aria-label="Main">
+      <a href="#about">About</a>
+      <a href="#founder">Story</a>
+      <a href="#chef">Chef</a>
+      <a href="#awards">Awards</a>
+      <a href="#opening-hours">Hours</a>
+      <a href="#lokasi">Lokasi</a>
+    </nav>
   </header>
   <main>
     <section class="hero" id="hero">
+      <div class="hero-bg-layer" id="hero-bg-layer" aria-hidden="true"></div>
+      <div class="hero-bg-immersive" aria-hidden="true">
+        <div class="hero-spotlight" id="hero-spotlight" aria-hidden="true"></div>
+        <div class="hero-light-sweep" aria-hidden="true"></div>
+      </div>
+      <div class="hero-bokeh" aria-hidden="true">
+        <span class="bokeh-dot"></span><span class="bokeh-dot"></span><span class="bokeh-dot"></span><span class="bokeh-dot"></span><span class="bokeh-dot"></span>
+        <span class="bokeh-dot"></span><span class="bokeh-dot"></span><span class="bokeh-dot"></span><span class="bokeh-dot"></span><span class="bokeh-dot"></span>
+      </div>
       <div class="hero-content">
         <img class="hero-logo" src="assets/logo.png" alt="Meatguy Steakhouse" />
         <h2 class="brand-name" data-json="hero.brandName">Meatguy Steakhouse</h2>
@@ -674,6 +1456,80 @@
       <p class="reveal-item" data-json="about.paragraphs[1]">Bintaro & SCBD — one message away for reservations and inquiries.</p>
     </section>
 
+    <section class="section reveal" id="highlighted-menu">
+      <p class="badge reveal-item">Highlighted menu</p>
+      <h2 class="reveal-item">Signature cuts</h2>
+      <div class="highlighted-menu-grid reveal-item">
+        <div class="highlighted-menu-card highlighted-menu-card--collage">
+          <div class="highlighted-menu-image">
+            <img src="assets/highlighted-tomahawk.png" alt="The Hanging Tomahawk — slow-smoked and carved tableside" loading="lazy" />
+          </div>
+          <div class="highlighted-menu-text">
+            <h3 class="highlighted-menu-title">The Hanging Tomahawk</h3>
+            <p class="highlighted-menu-desc">Signature Hanging Tomahawk ~1.8kg, slow-smoked & carved tableside.</p>
+          </div>
+        </div>
+        <div class="highlighted-menu-card highlighted-menu-card--collage">
+          <div class="highlighted-menu-image">
+            <img src="assets/highlighted-shortloin-wagyu.png" alt="Shortloin Fullblood Wagyu — Australian wagyu shortloin" loading="lazy" />
+          </div>
+          <div class="highlighted-menu-text">
+            <h3 class="highlighted-menu-title">Shortloin Fullblood Wagyu (PER 100 G)</h3>
+            <p class="highlighted-menu-desc">Australian wagyu shortloin MB 8–9.</p>
+          </div>
+        </div>
+        <div class="highlighted-menu-card highlighted-menu-card--collage">
+          <div class="highlighted-menu-image">
+            <img src="assets/highlighted-wagyu.png" alt="A5 Wagyu MB 12 Japanese wagyu striploin" loading="lazy" />
+          </div>
+          <div class="highlighted-menu-text">
+            <h3 class="highlighted-menu-title">A5 Wagyu MB 12 (PER 100 G)</h3>
+            <p class="highlighted-menu-desc">Japanese wagyu striploin.</p>
+          </div>
+        </div>
+        <div class="highlighted-menu-card highlighted-menu-card--collage">
+          <div class="highlighted-menu-image">
+            <img src="assets/highlighted-galician.png" alt="Galician Rubia bone-in cuts" loading="lazy" />
+          </div>
+          <div class="highlighted-menu-text">
+            <h3 class="highlighted-menu-title">Galician Rubia (PER 100 G)</h3>
+            <p class="highlighted-menu-desc">Bone-in cuts of rubia gallega cattle.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="founder">
+      <div class="founder-block">
+        <div class="founder-photo reveal-item" data-parallax-img role="button" tabindex="0" aria-label="View founder photo full size">
+          <img data-json-src="founder.imageUrl" alt="Dimas Ramadhan Pangestu" loading="lazy" />
+        </div>
+        <div class="founder-text reveal-item">
+          <p class="badge" data-json="founder.badge">The Founder</p>
+          <h2 data-json="founder.title">Dimsthemeatguy</h2>
+          <p class="section-subtitle" data-json="founder.subtitle">The visionary behind Meatguy Steakhouse</p>
+          <p class="section-name" data-json="founder.name">Dimas Ramadhan Pangestu</p>
+          <p data-json="founder.role">Founder of Meatguy Steakhouse</p>
+          <p class="reveal-item" data-json="founder.paragraphs[0]">Dimas (Dimsthemeatguy) turned a love for meat into a movement — from content and community to judge at the World Steak Challenge and, now, Meatguy Steakhouse.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="chef">
+      <div class="chef-block">
+        <div class="chef-photo reveal-item" data-parallax-img role="button" tabindex="0" aria-label="View chef photo full size">
+          <img data-json-src="chef.imageUrl" alt="Chef Teuku Wahyudi" loading="lazy" />
+        </div>
+        <div class="chef-text reveal-item">
+          <p class="badge" data-json="chef.badge">Meet Our Meat Master</p>
+          <h2 data-json="chef.title">Expert craftsmanship in every cut</h2>
+          <p class="section-name" data-json="chef.name">Chef Teuku Wahyudi</p>
+          <p class="section-subtitle" data-json="chef.subtitle">El Patrón — Executive Chef & Meat Master</p>
+          <p class="reveal-item" data-json="chef.paragraphs[0]">El Patrón brings a lifetime of passion to every cut: great steak from heart, not just heat — from grill to plate.</p>
+        </div>
+      </div>
+    </section>
+
     <section class="awards reveal" id="awards">
       <p class="badge reveal-item" data-json="awards.badge">Awards</p>
       <h2 class="awards-title reveal-item" data-json="awards.title">Recognition</h2>
@@ -687,17 +1543,35 @@
       </div>
     </section>
 
+    <section class="section reveal" id="opening-hours">
+      <h2 class="reveal-item" data-json="openingHours.title">Opening hours</h2>
+      <div class="opening-hours-grid reveal-item">
+        <div class="opening-hours-card">
+          <h3 data-json="openingHours.bintaro.name">Meatguy Bintaro</h3>
+          <p data-json="openingHours.bintaro.lines[0]">Tuesday – Friday: 15:00 – 22:00</p>
+          <p data-json="openingHours.bintaro.lines[1]">Saturday – Sunday: 11:00 – 22:00</p>
+        </div>
+        <div class="opening-hours-card">
+          <h3 data-json="openingHours.scbd.name">Meatguy SCBD</h3>
+          <p data-json="openingHours.scbd.lines[0]">Tuesday – Thursday: 11:00 – 15:00 & 17:30 – 23:00</p>
+          <p data-json="openingHours.scbd.lines[1]">Friday – Saturday: 11:00 – 15:00 & 17:30 – 24:00</p>
+        </div>
+      </div>
+    </section>
+
     <section class="section reveal lokasi-section" id="lokasi">
       <p class="badge reveal-item" data-json="lokasi.badge">Lokasi</p>
-      <h2 class="reveal-item" data-json="lokasi.title">Kunjungi kami</h2>
+      <h2 class="reveal-item" data-json="lokasi.title">Visit us</h2>
       <div class="lokasi-outlets">
         <article class="lokasi-outlet reveal-item">
           <h3 class="lokasi-outlet-name" data-json="lokasi.bintaro.name">Meatguy Steakhouse Bintaro</h3>
           <p class="lokasi-address" data-json="lokasi.bintaro.address">Jl. Maleo JA 1 No.1, Pd. Pucung, Kec. Pd. Aren, Kota Tangerang Selatan, Banten 15229</p>
+          <a href="https://wa.me/6281250070094" class="lokasi-wa-link" target="_blank" rel="noopener" data-json-href="lokasi.bintaro.waUrl" aria-label="Contact Bintaro via WhatsApp"><span data-json="lokasi.waLinkText">Contact via WhatsApp</span></a>
         </article>
         <article class="lokasi-outlet reveal-item">
           <h3 class="lokasi-outlet-name" data-json="lokasi.scbd.name">Meatguy Steakhouse SCBD</h3>
           <p class="lokasi-address" data-json="lokasi.scbd.address">SCBD, Jl. Jend. Sudirman Kav 52-53 No. LOT 8, RT.5/RW.1, Senayan, Kec. Kby. Baru, Jakarta Selatan 12190</p>
+          <a href="https://wa.me/6281250070094" class="lokasi-wa-link" target="_blank" rel="noopener" data-json-href="lokasi.scbd.waUrl" aria-label="Contact SCBD via WhatsApp"><span data-json="lokasi.waLinkText">Contact via WhatsApp</span></a>
         </article>
       </div>
 
@@ -705,8 +1579,8 @@
         <div class="lokasi-map-col reveal-item">
           <div class="lokasi-map-cell">
             <iframe class="lokasi-map-iframe" title="Peta Meatguy Steakhouse Bintaro" loading="lazy" referrerpolicy="no-referrer-when-downgrade" data-lokasi-embed="bintaro" src="https://maps.google.com/maps?q=-6.29876,106.71497&amp;z=16&amp;output=embed"></iframe>
-            <a href="https://maps.app.goo.gl/AdwhndEGk2UGVY4y5" target="_blank" rel="noopener noreferrer" class="lokasi-map-overlay" data-json-href="lokasi.bintaro.mapsUrl" aria-label="Buka Meatguy Steakhouse Bintaro di Google Maps">
-              <span class="lokasi-map-hint"><span data-json="lokasi.bintaro.mapCta">Buka di Google Maps</span></span>
+            <a href="https://maps.app.goo.gl/AdwhndEGk2UGVY4y5" target="_blank" rel="noopener noreferrer" class="lokasi-map-overlay" data-json-href="lokasi.bintaro.mapsUrl" aria-label="Open Meatguy Steakhouse Bintaro in Google Maps">
+              <span class="lokasi-map-hint"><span data-json="lokasi.bintaro.mapCta">Open in Google Maps</span></span>
             </a>
           </div>
           <p class="lokasi-map-info" data-json="lokasi.bintaro.mapInfo">Bintaro</p>
@@ -714,30 +1588,41 @@
         <div class="lokasi-map-col reveal-item">
           <div class="lokasi-map-cell">
             <iframe class="lokasi-map-iframe" title="Peta Meatguy Steakhouse SCBD" loading="lazy" referrerpolicy="no-referrer-when-downgrade" data-lokasi-embed="scbd" src="https://maps.google.com/maps?q=-6.22535,106.80905&amp;z=16&amp;output=embed"></iframe>
-            <a href="https://maps.app.goo.gl/cyGwSu9Nnfq9JXZf6" target="_blank" rel="noopener noreferrer" class="lokasi-map-overlay" data-json-href="lokasi.scbd.mapsUrl" aria-label="Buka Meatguy Steakhouse SCBD di Google Maps">
-              <span class="lokasi-map-hint"><span data-json="lokasi.scbd.mapCta">Buka di Google Maps</span></span>
+            <a href="https://maps.app.goo.gl/cyGwSu9Nnfq9JXZf6" target="_blank" rel="noopener noreferrer" class="lokasi-map-overlay" data-json-href="lokasi.scbd.mapsUrl" aria-label="Open Meatguy Steakhouse SCBD in Google Maps">
+              <span class="lokasi-map-hint"><span data-json="lokasi.scbd.mapCta">Open in Google Maps</span></span>
             </a>
           </div>
           <p class="lokasi-map-info" data-json="lokasi.scbd.mapInfo">SCBD</p>
         </div>
       </div>
     </section>
-
-    <section class="cta-block reveal" lang="en">
-      <h2 class="reveal-item" data-json="ctaBlock.title">Reserve now</h2>
-      <a href="https://wa.me/628119628008" class="cta-wa reveal-item" target="_blank" rel="noopener" data-json-href="ctaBlock.waUrl" aria-label="Chat on WhatsApp — reservations and inquiries">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        <span data-json="ctaBlock.ctaText">Chat on WhatsApp</span>
-      </a>
-    </section>
   </main>
 
   <footer class="site-footer reveal">
     <p class="reveal-item"><span data-json="footer.text">Meatguy Steakhouse — Bintaro & SCBD</span> · <a href="https://meatguysteakhouse.com" target="_blank" rel="noopener" data-json-href="footer.websiteUrl" data-json="footer.websiteLabel">meatguysteakhouse.com</a></p>
+    <p class="reveal-item"><span data-json="footer.copyright">© 2025 Meatguy Steakhouse</span> · <span data-json="footer.companyName">PT. Daging Global Utama</span></p>
   </footer>
 
+  <div class="photo-lightbox" id="photo-lightbox" role="dialog" aria-modal="true" aria-label="View photo" aria-hidden="true">
+    <div class="photo-lightbox-backdrop" id="photo-lightbox-backdrop" aria-hidden="true"></div>
+    <div class="photo-lightbox-content">
+      <img id="photo-lightbox-img" src="" alt="" />
+      <button type="button" class="photo-lightbox-close" id="photo-lightbox-close" aria-label="Close">×</button>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
   <script>
     (function () {
+      if (typeof Lenis !== 'undefined' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        var lenis = new Lenis({ duration: 1.2, easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); } });
+        function raf(time) {
+          lenis.raf(time);
+          requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+      }
+
       var sections = document.querySelectorAll('.section.reveal, .awards.reveal, .cta-block.reveal, footer.site-footer.reveal');
       var observer = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
@@ -748,16 +1633,57 @@
       }, { rootMargin: '-10% 0px -10% 0px', threshold: 0 });
       sections.forEach(function (el) { observer.observe(el); });
 
+      var inViewSections = document.querySelectorAll('.section.reveal, .awards.reveal, footer.site-footer.reveal');
+      var inViewObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+          } else {
+            entry.target.classList.remove('in-view');
+          }
+        });
+      }, { rootMargin: '-10% 0px -15% 0px', threshold: 0 });
+      inViewSections.forEach(function (el) { inViewObserver.observe(el); });
+
       var header = document.getElementById('site-header');
+      var scrollHint = document.querySelector('.scroll-hint');
+      var floatingWa = document.getElementById('floating-wa');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       function onScroll() {
         if (window.scrollY > 80) {
           header.classList.add('visible');
         } else {
           header.classList.remove('visible');
         }
+        if (scrollHint) {
+          if (window.scrollY > 50) {
+            scrollHint.classList.add('faded');
+          } else {
+            scrollHint.classList.remove('faded');
+          }
+        }
+        if (floatingWa && !reduceMotion) {
+          if (window.scrollY > 400) {
+            floatingWa.classList.add('visible');
+          } else {
+            floatingWa.classList.remove('visible');
+          }
+        }
       }
       window.addEventListener('scroll', onScroll, { passive: true });
       onScroll();
+
+      var scrollProgress = document.getElementById('scroll-progress');
+      if (scrollProgress && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        function updateScrollProgress() {
+          var maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+          var pct = maxScroll > 0 ? (window.scrollY / maxScroll) * 100 : 0;
+          scrollProgress.style.width = pct + '%';
+        }
+        window.addEventListener('scroll', updateScrollProgress, { passive: true });
+        window.addEventListener('resize', updateScrollProgress);
+        updateScrollProgress();
+      }
 
       function getByPath(obj, path) {
         var parts = path.replace(/\[(\d+)\]/, '.$1').split('.');
@@ -784,6 +1710,13 @@
               el.setAttribute('href', val);
             }
           });
+          document.querySelectorAll('[data-json-src]').forEach(function (el) {
+            var key = el.getAttribute('data-json-src');
+            var val = getByPath(data, key);
+            if (val != null) {
+              el.setAttribute('src', val);
+            }
+          });
           ['bintaro', 'scbd'].forEach(function (key) {
             var q = getByPath(data, 'lokasi.' + key + '.embedQuery');
             var frame = document.querySelector('[data-lokasi-embed="' + key + '"]');
@@ -798,6 +1731,205 @@
       var heroBgTest = new Image();
       heroBgTest.onload = function () { hero.classList.add('has-bg-local'); };
       heroBgTest.src = 'assets/hero-bg.png';
+
+      if (hero && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        var heroObserver = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              hero.classList.remove('scrolled-out');
+            } else {
+              hero.classList.add('scrolled-out');
+            }
+          });
+        }, { threshold: 0, rootMargin: '-5% 0px -5% 0px' });
+        heroObserver.observe(hero);
+
+        var heroBgLayer = document.getElementById('hero-bg-layer');
+        if (heroBgLayer) {
+          var parallaxTicking = false;
+          function updateHeroParallax() {
+            var rect = hero.getBoundingClientRect();
+            var scrollY = window.scrollY || window.pageYOffset;
+            var y = 0;
+            if (rect.bottom < 0) {
+              y = hero.offsetHeight * 0.3;
+            } else if (rect.top > window.innerHeight) {
+              y = 0;
+            } else {
+              y = scrollY * 0.28;
+            }
+            heroBgLayer.style.transform = 'translateY(' + y + 'px)';
+            parallaxTicking = false;
+          }
+          function onParallaxScroll() {
+            if (parallaxTicking) return;
+            parallaxTicking = true;
+            requestAnimationFrame(updateHeroParallax);
+          }
+          window.addEventListener('scroll', onParallaxScroll, { passive: true });
+          window.addEventListener('resize', onParallaxScroll);
+          updateHeroParallax();
+        }
+      }
+
+      var spotlight = document.getElementById('hero-spotlight');
+      if (spotlight && hero && window.matchMedia('(min-width: 769px)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        hero.addEventListener('mousemove', function (e) {
+          var rect = hero.getBoundingClientRect();
+          var x = (e.clientX - rect.left) / rect.width - 0.5;
+          var y = (e.clientY - rect.top) / rect.height - 0.5;
+          spotlight.style.setProperty('--mouse-x', x);
+          spotlight.style.setProperty('--mouse-y', y);
+        });
+        hero.addEventListener('mouseleave', function () {
+          spotlight.style.setProperty('--mouse-x', 0);
+          spotlight.style.setProperty('--mouse-y', 0);
+        });
+      }
+
+      if (window.matchMedia('(min-width: 769px)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        var magneticButtons = [];
+        var ctaHero = document.querySelector('.cta-hero');
+        var floatingWa = document.getElementById('floating-wa');
+        if (ctaHero) magneticButtons.push({ el: ctaHero, ctx: 'hero' });
+        if (floatingWa) magneticButtons.push({ el: floatingWa, ctx: null });
+
+        magneticButtons.forEach(function (btn) {
+          btn.curX = 0;
+          btn.curY = 0;
+          btn.targetX = 0;
+          btn.targetY = 0;
+        });
+
+        function setMagneticTarget(btn, clientX, clientY) {
+          var rect = btn.el.getBoundingClientRect();
+          var cx = rect.left + rect.width / 2;
+          var cy = rect.top + rect.height / 2;
+          var dx = clientX - cx;
+          var dy = clientY - cy;
+          var dist = Math.sqrt(dx * dx + dy * dy);
+          var radius = 100;
+          var maxOffset = 10;
+          if (dist < radius) {
+            var t = 1 - dist / radius;
+            btn.targetX = (dx / dist) * maxOffset * t;
+            btn.targetY = (dy / dist) * maxOffset * t;
+          } else {
+            btn.targetX = 0;
+            btn.targetY = 0;
+          }
+        }
+
+        function magneticRaf() {
+          magneticButtons.forEach(function (btn) {
+            btn.curX += (btn.targetX - btn.curX) * 0.12;
+            btn.curY += (btn.targetY - btn.curY) * 0.12;
+            var x = Math.round(btn.curX * 10) / 10;
+            var y = Math.round(btn.curY * 10) / 10;
+            btn.el.style.setProperty('--magnetic-x', x + 'px');
+            btn.el.style.setProperty('--magnetic-y', y + 'px');
+          });
+          requestAnimationFrame(magneticRaf);
+        }
+        if (magneticButtons.length) requestAnimationFrame(magneticRaf);
+
+        if (hero && ctaHero) {
+          hero.addEventListener('mousemove', function (e) { setMagneticTarget(magneticButtons[0], e.clientX, e.clientY); });
+          hero.addEventListener('mouseleave', function () {
+            magneticButtons[0].targetX = 0;
+            magneticButtons[0].targetY = 0;
+          });
+        }
+        if (floatingWa) {
+          document.addEventListener('mousemove', function (e) {
+            var idx = ctaHero ? 1 : 0;
+            setMagneticTarget(magneticButtons[idx], e.clientX, e.clientY);
+          });
+        }
+      }
+
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        var parallaxImgs = document.querySelectorAll('[data-parallax-img]');
+        var parallaxTicking = false;
+        function updateSectionParallax() {
+          var scrollY = window.scrollY || window.pageYOffset;
+          var innerH = window.innerHeight;
+          parallaxImgs.forEach(function (el) {
+            var section = el.closest('.section');
+            if (!section) return;
+            var rect = section.getBoundingClientRect();
+            var sectionTop = rect.top + scrollY;
+            var sectionH = rect.height;
+            var progress = (scrollY - sectionTop + innerH) / (sectionH + innerH);
+            progress = Math.max(0, Math.min(1, progress));
+            var y = progress * 20;
+            el.style.setProperty('--parallax-y', y + 'px');
+          });
+          parallaxTicking = false;
+        }
+        function onSectionParallaxScroll() {
+          if (parallaxTicking) return;
+          parallaxTicking = true;
+          requestAnimationFrame(updateSectionParallax);
+        }
+        if (parallaxImgs.length) {
+          window.addEventListener('scroll', onSectionParallaxScroll, { passive: true });
+          window.addEventListener('resize', onSectionParallaxScroll);
+          updateSectionParallax();
+        }
+      }
+
+      var photoLightbox = document.getElementById('photo-lightbox');
+      var photoLightboxImg = document.getElementById('photo-lightbox-img');
+      var photoLightboxClose = document.getElementById('photo-lightbox-close');
+      var photoLightboxBackdrop = document.getElementById('photo-lightbox-backdrop');
+      if (photoLightbox && photoLightboxImg && photoLightboxClose) {
+        var lastPhotoTrigger = null;
+        function openPhotoLightbox(src, alt) {
+          if (!src) return;
+          photoLightboxImg.src = src;
+          photoLightboxImg.alt = alt || 'Photo';
+          photoLightbox.classList.add('is-open');
+          photoLightbox.setAttribute('aria-hidden', 'false');
+          document.body.setAttribute('aria-hidden', 'true');
+          lastPhotoTrigger = document.activeElement;
+          photoLightboxClose.focus();
+          document.addEventListener('keydown', onLightboxKeydown);
+        }
+        function closePhotoLightbox() {
+          photoLightbox.classList.remove('is-open');
+          photoLightbox.setAttribute('aria-hidden', 'true');
+          document.body.removeAttribute('aria-hidden');
+          document.removeEventListener('keydown', onLightboxKeydown);
+          if (lastPhotoTrigger && typeof lastPhotoTrigger.focus === 'function') {
+            lastPhotoTrigger.focus();
+          }
+          lastPhotoTrigger = null;
+        }
+        function onLightboxKeydown(e) {
+          if (e.key === 'Escape') {
+            closePhotoLightbox();
+          }
+        }
+        photoLightboxClose.addEventListener('click', closePhotoLightbox);
+        if (photoLightboxBackdrop) {
+          photoLightboxBackdrop.addEventListener('click', closePhotoLightbox);
+        }
+        document.querySelectorAll('.founder-photo, .chef-photo').forEach(function (el) {
+          var img = el.querySelector('img');
+          function openLightbox(ev) {
+            if (ev.type === 'keydown' && ev.key !== 'Enter' && ev.key !== ' ') return;
+            if (ev.type === 'keydown') ev.preventDefault();
+            if (img && img.src) {
+              openPhotoLightbox(img.src, img.alt);
+            }
+          }
+          el.addEventListener('click', openLightbox);
+          el.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') openLightbox(e);
+          });
+        });
+      }
     })();
   </script>
 </body>
